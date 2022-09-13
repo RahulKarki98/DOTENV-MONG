@@ -1,89 +1,47 @@
-//const express = require('express'); 
-//3rd party package
-
+// const express = require('express'); // 3rd party package 
+// const { MongoClient } = require("mongodb")
+import cors from "cors";
 import express from "express";
-import { MongoClient } from "mongodb";
-import  dotenv from 'dotenv' ;
-import { getAllMovies, addMovies, getMovieById, deleteMovieById, updateMovieById } from "./helper.js";
-import {moviesRouter} from './routes/movies.js'
+import  { MongoClient } from "mongodb";
+import dotenv from 'dotenv';
+import { getAllMovies, addMovies, getMovieById, deleteMovieById, updateMovieById, genPassword } from "./helper.js";
+import { moviesRouter } from './routes/movies.js'
+import { userRouter } from './routes/user.js'
+import bcrypt from "bcrypt";
+
 
 dotenv.config()
-console.log(process.env.MONGO_URL)
-
 const app = express();
+app.use(cors())
 const PORT = process.env.PORT;
-
+const MONGO_URL = process.env.MONGO_URL;
   
-const MONGO_URL = process.env.MONGO_URL
-
-
-// const MONGO_URL = ""
-
+// const MONGO_URL ="mongodb://localhost"
 
 async function createConnection() {
-  const client = new MongoClient(MONGO_URL)
-  await client.connect();
-  console.log(" Mongo is connected");
-  return client;
+    const client = new MongoClient(MONGO_URL)
+    await client.connect();
+    console.log("Mongo is connected");
+    return client;
+  }
 
-}
+export const client =  await createConnection();
+
+app.use(express.json())
 
 
-export const client = await createConnection();
+// Rest Api endpoints
 
-app.use(express.json());
-
-// Rest Api Endpoint
-
-app.get("/",(request,response)=>{
-    response.send("hello everyone")
+app.get("/", (request, response) =>  {
+    response.send("Hello Everyone")
 });
 
+//specify movie router
 
-//Task 1  to get movies
+app.use('/movies', moviesRouter)
 
-// app.get("/movies",(request,response)=>{
-//     response.send(movies)
-// });  
-
-
-
-//Task - 3  get movie by query
-
-// allthe movies
-// only english movies
-// filter by language & rating
-// only rating with 8 movies need to display
-
-
-// Task - get all movie : must come from th mongodb
-//app.get("/movies",async (request,response)=>{
-      // const {language,rating}= request.query;
-      // console.log(request.query, language);
-       //let filteredMovies  =   movies;
-       
-      //  if(language) {
-      //   filteredMovies =filteredMovies.filter((mv) => mv.language === language)
-      //  }
-
-          
-      //  if(rating) {
-      //   filteredMovies =filteredMovies.filter((mv) => mv.rating == rating)
-      //  }
-
-      
-
-
-  
-
-  //specify movie router
-
-  app.use('/movies', moviesRouter)
-
-
-
+app.use('/user', userRouter)
 
 //create a server
-app.listen(PORT ,() => console.log("SERver satred on port", PORT));
-
+app.listen(PORT, () => console.log("Server started on port", PORT));
 

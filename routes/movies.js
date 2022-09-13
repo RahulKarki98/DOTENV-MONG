@@ -1,7 +1,10 @@
 import express from "express";
 import{ getAllMovies, getMovieById, deleteMovieById, addMovies, updateMovieById} from "../helper.js"
+import { auth } from "../middleware/auth.js"
 
 const router = express.Router();
+
+//get all movies
 router.get("/",async (request,response)=>{
     if(request.query.rating)
     {
@@ -16,17 +19,18 @@ router.get("/",async (request,response)=>{
   });
 
 
+//inbuild middleware - say data is in JSON
 
-
-// task - POST method - to insert data to db
-router.post("/",  async (request,response)=>{
-const newMovies = request.body;
-console.log(newMovies) 
-//db.movies.insertMany(movies)
+//post method  - to insert data to db
+router.post("/", async (request, response) =>  {  
+  const newMovies = request.body;
+  console.log(newMovies);
+  //db.movies.insertMany(movies) 
  const result = await addMovies(newMovies);
-response.send(result);
+ response.send(result);
+  });
 
-});
+
 
 
 //Task 2 - to get movies id
